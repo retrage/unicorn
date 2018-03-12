@@ -1,1 +1,3 @@
-obj-y += translate.o op_helper.o helper.o cpu.o fpu_helper.o gdbstub.o pmp.o
+obj-y += translate.o op_helper.o helper.o cpu.o fpu_helper.o pmp.o
+obj-$(TARGET_RISCV32) += unicorn_riscv32.o
+obj-$(TARGET_RISCV64) += unicorn_riscv64.o

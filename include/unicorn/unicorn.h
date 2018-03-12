@@ -32,6 +32,7 @@ typedef size_t uc_hook;
 #include "arm64.h"
 #include "mips.h"
 #include "sparc.h"
+#include "riscv.h"
 
 #ifdef __GNUC__
 #define DEFAULT_VISIBILITY __attribute__((visibility("default")))
@@ -95,6 +96,7 @@ typedef enum uc_arch {
     UC_ARCH_PPC,        // PowerPC architecture (currently unsupported)
     UC_ARCH_SPARC,      // Sparc architecture
     UC_ARCH_M68K,       // M68K architecture
+    UC_ARCH_RISCV,      // RISC-V architecture
     UC_ARCH_MAX,
 } uc_arch;
 
@@ -126,6 +128,9 @@ typedef enum uc_mode {
     UC_MODE_SPARC64 = 1 << 3,     // 64-bit mode
     UC_MODE_V9 = 1 << 4,          // SparcV9 mode (currently unsupported)
     // m68k
+    // risc-v
+    UC_MODE_RISCV32 = 1 << 2,     // RV32
+    UC_MODE_RISCV64 = 1 << 3,     // RV64
 } uc_mode;
 
 // All type of errors encountered by Unicorn API.

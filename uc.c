@@ -20,6 +20,7 @@
 #include "qemu/target-i386/unicorn.h"
 #include "qemu/target-arm/unicorn.h"
 #include "qemu/target-mips/unicorn.h"
+#include "qemu/target-riscv/unicorn.h"
 #include "qemu/target-sparc/unicorn.h"
 
 #include "qemu/include/hw/boards.h"
@@ -123,6 +124,9 @@ bool uc_arch_supported(uc_arch arch)
 #endif
 #ifdef UNICORN_HAS_PPC
         case UC_ARCH_PPC:   return true;
+#endif
+#ifdef UNICORN_HAS_RISCV
+        case UC_ARCH_RISCV: return true;
 #endif
 #ifdef UNICORN_HAS_SPARC
         case UC_ARCH_SPARC: return true;
@@ -242,6 +246,21 @@ uc_err uc_open(uc_arch arch, uc_mode mode, uc_engine **result)
                         uc->init_arch = mips64el_uc_init;
 #endif
                 }
+                break;
+#endif
+
+#ifdef UNICORN_HAS_RISCV
+            case UC_ARCH_RISCV:
+                if ((mode & ~UC_MODE_RISCV_MASK) ||
+                        !(mode & UC_MODE_LITTLE_ENDIAN) ||
+                        !(mode & (UC_MODE_RISCV32|UC_MODE_RISCV64))) {
+                    free(uc);
+                    return UC_ERR_MODE;
+                }
+                if (mode & UC_MODE_RISCV64)
+                    uc->init_arch = riscv64_uc_init;
+                else
+                    uc->init_arch = riscv32_uc_init;
                 break;
 #endif
 
@@ -574,6 +593,12 @@ uc_err uc_emu_start(uc_engine* uc, uint64_t begin, uint64_t until, uint64_t time
         case UC_ARCH_MIPS:
             // TODO: MIPS32/MIPS64/BIGENDIAN etc
             uc_reg_write(uc, UC_MIPS_REG_PC, &begin);
+            break;
+#endif
+#ifdef UNICORN_HAS_RISCV
+        case UC_ARCH_RISCV:
+            // TODO: RV32/RV64
+            uc_reg_write(uc, UC_RISCV_REG_PC, &begin);
             break;
 #endif
 #ifdef UNICORN_HAS_SPARC
@@ -1228,6 +1253,9 @@ static size_t cpu_context_size(uc_arch arch, uc_mode mode)
                     return MIPS_REGS_STORAGE_SIZE_mipsel;
                 }
             }
+#endif
+#ifdef UNICORN_HAS_RISCV
+        case UC_ARCH_RISCV: return mode & UC_MODE_RISCV64 ? RISCV64_REGS_STORAGE_SIZE : RISCV32_REGS_STORAGE_SIZE;
 #endif
 #ifdef UNICORN_HAS_SPARC
         case UC_ARCH_SPARC: return mode & UC_MODE_SPARC64 ? SPARC64_REGS_STORAGE_SIZE : SPARC_REGS_STORAGE_SIZE;

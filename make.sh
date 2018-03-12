@@ -96,6 +96,8 @@ msvc_update_genfiles() {
   cp qemu/mips64-softmmu/config-target.h   msvc/unicorn/mips64-softmmu/config-target.h
   cp qemu/mipsel-softmmu/config-target.h   msvc/unicorn/mipsel-softmmu/config-target.h
   cp qemu/mips-softmmu/config-target.h     msvc/unicorn/mips-softmmu/config-target.h
+  cp qemu/riscv32-softmmu/config-target.h    msvc/unicorn/riscv32-softmmu/config-target.h
+  cp qemu/riscv64-softmmu/config-target.h    msvc/unicorn/riscv64-softmmu/config-target.h
   cp qemu/sparc64-softmmu/config-target.h  msvc/unicorn/sparc64-softmmu/config-target.h
   cp qemu/sparc-softmmu/config-target.h    msvc/unicorn/sparc-softmmu/config-target.h
   cp qemu/x86_64-softmmu/config-target.h   msvc/unicorn/x86_64-softmmu/config-target.h
