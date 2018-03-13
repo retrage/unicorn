@@ -20,6 +20,8 @@
 #ifndef RISCV_CPU_H
 #define RISCV_CPU_H
 
+#include "config.h"
+
 /* QEMU addressing/paging config */
 #define TARGET_PAGE_BITS 12 /* 4 KiB Pages */
 #if defined(TARGET_RISCV64)
@@ -174,6 +176,9 @@ struct CPURISCVState {
 
     /* Fields from here on are preserved across CPU reset. */
     QEMUTimer *timer; /* Internal timer */
+
+    /* Unicorn engine */
+    struct uc_struct *uc;
 };
 
 #define RISCV_CPU_CLASS(klass) \
@@ -241,7 +246,7 @@ void riscv_cpu_do_interrupt(CPUState *cpu);
 int riscv_cpu_gdb_read_register(CPUState *cpu, uint8_t *buf, int reg);
 int riscv_cpu_gdb_write_register(CPUState *cpu, uint8_t *buf, int reg);
 bool riscv_cpu_exec_interrupt(CPUState *cs, int interrupt_request);
-int riscv_cpu_mmu_index(CPURISCVState *env, bool ifetch);
+int cpu_mmu_index(CPURISCVState *env, bool ifetch);
 hwaddr riscv_cpu_get_phys_page_debug(CPUState *cpu, vaddr addr);
 void  riscv_cpu_do_unaligned_access(CPUState *cs, vaddr addr,
                                     MMUAccessType access_type, int mmu_idx,
@@ -255,12 +260,11 @@ void riscv_cpu_list(FILE *f, fprintf_function cpu_fprintf);
 #define cpu_init(cpu_model) cpu_generic_init(TYPE_RISCV_CPU, cpu_model)
 #define cpu_signal_handler cpu_riscv_signal_handler
 #define cpu_list riscv_cpu_list
-#define cpu_mmu_index riscv_cpu_mmu_index
 
 void riscv_set_mode(CPURISCVState *env, target_ulong newpriv);
 
-void riscv_translate_init(void);
-RISCVCPU *cpu_riscv_init(const char *cpu_model);
+void riscv_tcg_init(struct uc_struct *uc);
+RISCVCPU *cpu_riscv_init(struct uc_struct *uc, const char *cpu_model);
 int cpu_riscv_signal_handler(int host_signum, void *pinfo, void *puc);
 void QEMU_NORETURN do_raise_exception_err(CPURISCVState *env,
                                           uint32_t exception, uintptr_t pc);

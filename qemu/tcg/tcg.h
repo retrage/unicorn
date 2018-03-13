@@ -27,6 +27,7 @@
 
 #include "qemu-common.h"
 #include "qemu/bitops.h"
+#include "tcg-mo.h"
 #include "tcg-target.h"
 #include "exec/exec-all.h"
 
@@ -189,6 +190,8 @@ typedef struct TCGPool {
 #define TCG_MAX_LABELS 512
 
 #define TCG_MAX_TEMPS 512
+
+#define TCG_MAX_INSNS 512
 
 /* when the size of the arguments of a called function is smaller than
    this value, they are statically allocated in the TB stack frame */

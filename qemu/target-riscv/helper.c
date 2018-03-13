@@ -25,7 +25,7 @@
 
 #define RISCV_DEBUG_INTERRUPT 0
 
-int riscv_cpu_mmu_index(CPURISCVState *env, bool ifetch)
+int cpu_mmu_index(CPURISCVState *env, bool ifetch)
 {
 #ifdef CONFIG_USER_ONLY
     return 0;
