@@ -4130,7 +4130,7 @@ riscv_symbols = (
     'decode_RV32_64C',
     'decode_RV32_64G',
     'decode_opc',
-    'gen_intermediate_code',
+#    'gen_intermediate_code',
     'riscv_translate_init',
     'riscv32_reg_read',
     'riscv32_reg_write',
