@@ -52,27 +52,45 @@ build_linux32() {
   ${MAKE}
 }
 
+build_js() {
+  EXPORTED_FUNCTIONS="['_uc_version', '_uc_arch_supported', '_uc_open', '_uc_close', '_uc_query', '_uc_errno', '_uc_strerror', '_uc_reg_write', '_uc_reg_read', '_uc_reg_write_batch', '_uc_reg_read_batch', '_uc_mem_write', '_uc_mem_read', '_uc_emu_start', '_uc_emu_stop', '_uc_hook_add', '_uc_hook_del', '_uc_mem_map', '_uc_mem_map_ptr', '_uc_mem_unmap', '_uc_mem_protect', '_uc_mem_regions', '_uc_context_alloc', '_uc_free', '_uc_context_save', '_uc_context_restore']"
+  EXTRA_METHODS="['ccall', 'getValue', 'setValue', 'addFunction', 'removeFunction', 'writeArrayToMemory']"
+  UNICORN_ARCHS="x86" \
+  UNICORN_QEMU_FLAGS="--enable-tcg-interpreter ${UNICORN_QEMU_FLAGS}" \
+  emmake ${MAKE}
+  emcc \
+    -Os --memory-init-file 0 \
+  libunicorn.a \
+  -s "EXPORTED_FUNCTIONS=${EXPORTED_FUNCTIONS}" \
+  -s "EXTRA_EXPORTED_RUNTIME_METHODS=${EXTRA_METHODS}" \
+  -s RESERVED_FUNCTION_POINTERS=256 \
+  -s ALLOW_MEMORY_GROWTH=1 \
+  -s MODULARIZE=1 \
+  -s EXPORT_NAME="'MUnicorn'" \
+  -o libunicorn-x86.out.js
+}
+
 install() {
-  # Mac OSX needs to find the right directory for pkgconfig
-  if [ "$UNAME" = Darwin ]; then
-    # we are going to install into /usr/local, so remove old installs under /usr
-    rm -rf /usr/lib/libunicorn*
-    rm -rf /usr/include/unicorn
-    # install into /usr/local
-    PREFIX="${PREFIX-/usr/local}"
-    ${MAKE} install
-  else  # not OSX
-    test -d /usr/lib64 && LIBDIRARCH=lib64
-    ${MAKE} install
-  fi
+# Mac OSX needs to find the right directory for pkgconfig
+if [ "$UNAME" = Darwin ]; then
+  # we are going to install into /usr/local, so remove old installs under /usr
+  rm -rf /usr/lib/libunicorn*
+  rm -rf /usr/include/unicorn
+  # install into /usr/local
+  PREFIX="${PREFIX-/usr/local}"
+  ${MAKE} install
+else  # not OSX
+  test -d /usr/lib64 && LIBDIRARCH=lib64
+  ${MAKE} install
+fi
 }
 
 uninstall() {
-  # Mac OSX needs to find the right directory for pkgconfig
-  if [ "$UNAME" = "Darwin" ]; then
-    # find the directory automatically, so we can support both Macport & Brew
-    PKGCFGDIR="$(pkg-config --variable pc_path pkg-config | cut -d ':' -f 1)"
-    PREFIX="${PREFIX-/usr/local}"
+# Mac OSX needs to find the right directory for pkgconfig
+if [ "$UNAME" = "Darwin" ]; then
+  # find the directory automatically, so we can support both Macport & Brew
+  PKGCFGDIR="$(pkg-config --variable pc_path pkg-config | cut -d ':' -f 1)"
+  PREFIX="${PREFIX-/usr/local}"
     ${MAKE} uninstall
   else  # not OSX
     test -d /usr/lib64 && LIBDIRARCH=lib64
@@ -134,6 +152,7 @@ case "$1" in
   "ios_armv7s" ) build_iOS armv7s;;
   "ios_arm64" ) build_iOS arm64;;
   "linux32" ) build_linux32;;
+  "js" ) build_js;;
   "msvc_update_genfiles" ) msvc_update_genfiles;;
   * )
     echo "Usage: $0 ["`grep '^  "' $0 | cut -d '"' -f 2 | tr "\\n" "|"`"]"
