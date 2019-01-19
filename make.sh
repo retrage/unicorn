@@ -61,6 +61,7 @@ build_js() {
   emcc \
     -Os --memory-init-file 0 \
   libunicorn.a \
+  -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
   -s "EXPORTED_FUNCTIONS=${EXPORTED_FUNCTIONS}" \
   -s "EXTRA_EXPORTED_RUNTIME_METHODS=${EXTRA_METHODS}" \
   -s RESERVED_FUNCTION_POINTERS=256 \
