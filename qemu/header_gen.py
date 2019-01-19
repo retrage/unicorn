@@ -7,8 +7,6 @@
 import sys
 
 symbols = (
-    'tci_tb_ptr',
-    'tcg_qemu_tb_exec',
     'arm_release',
     'aarch64_tb_set_jmp_target',
     'ppc_tb_set_jmp_target',
@@ -4056,6 +4054,10 @@ sparc_symbols = (
     'helper_save',
     'helper_restore')
 
+tci_symbols = (
+    'tci_tb_ptr',
+    'tcg_qemu_tb_exec')
+
 
 if __name__ == '__main__':
   arch = sys.argv[1]
@@ -4063,6 +4065,10 @@ if __name__ == '__main__':
   print("/* Autogen header for Unicorn Engine - DONOT MODIFY */")
   print("#ifndef UNICORN_AUTOGEN_%s_H" %arch.upper())
   print("#define UNICORN_AUTOGEN_%s_H" %arch.upper())
+
+  if '--enable-tcg-interpreter' in sys.argv:
+    for s in tci_symbols:
+      print("#define %s %s_%s" %(s, s, arch))
 
   for s in symbols:
       print("#define %s %s_%s" %(s, s, arch))

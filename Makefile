@@ -223,7 +223,8 @@ all: unicorn
 	$(MAKE) -C samples
 
 qemu/config-host.h-timestamp:
-	cd qemu && ./gen_all_header.sh
+	cd qemu && \
+	./gen_all_header.sh $(findstring --enable-tcg-interpreter,$(UNICORN_QEMU_FLAGS))
 	cd qemu && \
 	./configure --cc="${CC}" --extra-cflags="$(UNICORN_CFLAGS)" --target-list="$(UNICORN_TARGETS)" ${UNICORN_QEMU_FLAGS}
 	printf "$(UNICORN_ARCHS)" > config.log
