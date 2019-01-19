@@ -540,6 +540,10 @@ for opt do
   ;;
   --disable-stack-protector) stack_protector="no"
   ;;
+  --enable-tcg-interpreter) tcg_interpreter="yes"
+  ;;
+  --disable-tcg-interpreter) tcg_interpreter="no"
+  ;;
   *)
       echo "ERROR: unknown option $opt"
       echo "Try '$0 --help' for more information"
@@ -658,11 +662,23 @@ Advanced options (experts only):
   --disable-stack-protector disable compiler-provided stack protection
   --enable-pie             build Position Independent Executables
   --disable-pie            do not build Position Independent Executables
+  --enable-tcg-interpreter enable TCG with bytecode interpreter (TCI)
   --cpu=CPU                Build for host CPU [$cpu]
 
 NOTE: The object files are built at the place where configure is launched
 EOF
 exit 0
+fi
+
+# Now we have handled --enable-tcg-interpreter and know we're not just
+# printing the help message, bail out if the host CPU isn't supported.
+if test "$ARCH" = "unknown"; then
+    if test "$tcg_interpreter" = "yes" ; then
+        echo "Unsupported CPU = $cpu, will use TCG with TCI (experimental)"
+        ARCH=tci
+    else
+        error_exit "Unsupported CPU = $cpu, try --enable-tcg-interpreter"
+    fi
 fi
 
 # Consult white-list to determine whether to enable werror
@@ -1105,6 +1121,7 @@ if test -n "$sparc_cpu"; then
     echo "Target Sparc Arch $sparc_cpu"
 fi
 echo "PIE               $pie"
+echo "TCG interpreter   $tcg_interpreter"
 
 config_host_mak="config-host.mak"
 

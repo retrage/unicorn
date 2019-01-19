@@ -7,6 +7,8 @@
 import sys
 
 symbols = (
+    'tci_tb_ptr',
+    'tcg_qemu_tb_exec',
     'arm_release',
     'aarch64_tb_set_jmp_target',
     'ppc_tb_set_jmp_target',
